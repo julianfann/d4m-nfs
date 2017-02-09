@@ -1,6 +1,6 @@
 #!/bin/bash
 
-README=true
+README=false
 
 while getopts ":q" opt; do
   case $opt in
@@ -53,7 +53,8 @@ if [ -e "${SDIR}/etc/d4m-nfs-mounts.txt" ]; then
         NFSGID=$(echo "$MOUNT" | cut -d: -f4)
       fi
 
-      NFSEXP="\"$(echo "$MOUNT" | cut -d: -f1)\" -alldirs -mapall=${NFSUID}:${NFSGID} localhost"
+      # updated /etc/exports entries to elevate permissions. See https://github.com/nlf/dlite/issues/50#issuecomment-177030856
+      NFSEXP="\"$(echo "$MOUNT" | cut -d: -f1)\" -alldirs -maproot=root:wheel localhost"
 
       if ! $(grep "$NFSEXP" /etc/exports > /dev/null 2>&1); then
         EXPORTS="$EXPORTS\n$NFSEXP"
